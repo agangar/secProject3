@@ -75,16 +75,21 @@ public class secProject {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	@SuppressWarnings("deprecation")
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 455, 316);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		frame2=new JFrame();
-		frame2.setBounds(100, 100, 455, 316);
+		frame2.setBounds(100, 100, 455, 600);
 		frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame2.getContentPane().setLayout(null);
 		frame2.setVisible(false);
+		JTextPane resQueue = new JTextPane();
+		resQueue.setBounds(12, 13, 408, 500);
+		resQueue.setEditable(false);
+		frame2.getContentPane().add(resQueue);
 		
 		JButton btnReportStudentPresent = new JButton("Report Student Present");
 		btnReportStudentPresent.addActionListener(new ActionListener() {
@@ -92,6 +97,15 @@ public class secProject {
 				markStudentPresent();
 				frame.setVisible(false);
 				frame2.setVisible(true);
+				String queueString="";
+				int i=1;
+				for(Reservation resv: queue) {
+					long Ltime=(System.currentTimeMillis()-resv.time)/60000;
+					queueString+="\n"+i+": Student Email : "+resv.emailId+" \nQuestions : "+resv.sampleQuestion+"\nStudent is late by "+String.valueOf(Ltime)+" mins\nStatus : "+resv.status+"\n";
+					i++;
+				}
+				System.out.println(queueString);
+				resQueue.setText(queueString);
 			}
 		});
 		btnReportStudentPresent.setBounds(0, 231, 208, 25);
@@ -100,7 +114,18 @@ public class secProject {
 		JButton btnNewButton = new JButton("Report Student Absent");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				markStudentAbsent();			
+				markStudentAbsent();
+				frame.setVisible(false);
+				frame2.setVisible(true);
+				int i=1;
+				String queueString="Reservation Queue:";
+				for(Reservation resv: queue) {
+					long Ltime=(System.currentTimeMillis()-resv.time)/60000;
+					queueString+="\n"+i+" Student Email : "+resv.emailId+" \nQuestions : "+resv.sampleQuestion+"\nStudent is late by "+String.valueOf(Ltime)+" mins\nStatus : "+resv.status+"\n";
+					i++;
+					
+				}
+				resQueue.setText(queueString);
 			}
 		});
 		btnNewButton.setBounds(213, 231, 224, 25);
@@ -111,8 +136,10 @@ public class secProject {
 		textPane.setEditable(false);
 		if(queue.size()==0) {
 			textPane.setText("No appointments in Queue");
+			btnNewButton.setEnabled(false);
+			btnReportStudentPresent.setEnabled(false);
 		}else {
-			currRes=queue.poll();
+			currRes=queue.peek();
 			long Ltime=(System.currentTimeMillis()-currRes.time)/60000;
 			textPane.setText("Student Email : "+currRes.emailId+" \nQuestions : "+currRes.sampleQuestion+"\nStudent is late by "+String.valueOf(Ltime)+" mins");
 		}
@@ -126,11 +153,14 @@ public class secProject {
 	protected void markStudentAbsent() {
 		long Ltime=(System.currentTimeMillis()-currRes.time)/60000;
 		if(Ltime<10) {
+			queue.peek().status="Moved to End";
 			currRes.status="Moved to End";
 			queue.add(queue.poll());
 		}else {
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 			LocalDate localDate = LocalDate.now();
+			System.out.println("Banned on"+localDate);
+			queue.peek().status="Student Banned on "+String.valueOf(dtf.format(localDate));
 			currRes.status="Student Banned on "+String.valueOf(dtf.format(localDate));
 		}
 	}
