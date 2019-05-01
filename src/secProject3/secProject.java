@@ -26,6 +26,7 @@ public class secProject {
 	static Queue<Reservation> queue=new LinkedList<Reservation>();
 	static List<String> emails=new ArrayList<String>(Arrays.asList("student1@buffalo.edu","student2@buffalo.edu","student3@buffalo.edu","student4@buffalo.edu","student5@buffalo.edu"));
 	static List<String> questions=new ArrayList<String>(Arrays.asList("question1","question2?","question3?","question4?","question5?"));
+	static Long currentTime;
 	
 
 	/**
@@ -50,15 +51,15 @@ public class secProject {
 		Random r= new Random();
 		int num=r.nextInt(5);
 		List<Long> times=new ArrayList<Long>();
-		Long currTime=System.currentTimeMillis();
-		List<Long> TimeOptions=new ArrayList<Long>(Arrays.asList(currTime-300000,currTime-660000,currTime));
+		currentTime=System.currentTimeMillis();
+		List<Long> TimeOptions=new ArrayList<Long>(Arrays.asList(currentTime-300000,currentTime-660000,currentTime));
 		for(int i=0;i<num;i++) {
 			times.add(TimeOptions.get(r.nextInt(3)));
 		}
 		Collections.sort(times);
 		int i=0;
 		for(Long time:times) {
-			System.out.println((currTime-time)/60000);
+			System.out.println((currentTime-time)/60000);
 			Reservation res=new Reservation(emails.get(i),questions.get(4-i),time);
 			queue.add(res);
 			i++;
@@ -75,7 +76,6 @@ public class secProject {
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	@SuppressWarnings("deprecation")
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 455, 316);
@@ -100,7 +100,7 @@ public class secProject {
 				String queueString="";
 				int i=1;
 				for(Reservation resv: queue) {
-					long Ltime=(System.currentTimeMillis()-resv.time)/60000;
+					long Ltime=(currentTime-resv.time)/60000;
 					queueString+="\n"+i+": Student Email : "+resv.emailId+" \nQuestions : "+resv.sampleQuestion+"\nStudent is late by "+String.valueOf(Ltime)+" mins\nStatus : "+resv.status+"\n";
 					i++;
 				}
@@ -108,11 +108,11 @@ public class secProject {
 				resQueue.setText(queueString);
 			}
 		});
-		btnReportStudentPresent.setBounds(0, 231, 208, 25);
+		btnReportStudentPresent.setBounds(5, 200, 208, 50);
 		frame.getContentPane().add(btnReportStudentPresent);
 		
-		JButton btnNewButton = new JButton("Report Student Absent");
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton btnReportStudentAbsent = new JButton("Report Student Absent");
+		btnReportStudentAbsent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				markStudentAbsent();
 				frame.setVisible(false);
@@ -120,27 +120,27 @@ public class secProject {
 				int i=1;
 				String queueString="Reservation Queue:";
 				for(Reservation resv: queue) {
-					long Ltime=(System.currentTimeMillis()-resv.time)/60000;
-					queueString+="\n"+i+" Student Email : "+resv.emailId+" \nQuestions : "+resv.sampleQuestion+"\nStudent is late by "+String.valueOf(Ltime)+" mins\nStatus : "+resv.status+"\n";
+					long Ltime=(currentTime-resv.time)/60000;
+					queueString+="\n"+i+": Student Email : "+resv.emailId+" \nQuestions : "+resv.sampleQuestion+"\nStudent is late by "+String.valueOf(Ltime)+" mins\nStatus : "+resv.status+"\n";
 					i++;
 					
 				}
 				resQueue.setText(queueString);
 			}
 		});
-		btnNewButton.setBounds(213, 231, 224, 25);
-		frame.getContentPane().add(btnNewButton);
+		btnReportStudentAbsent.setBounds(218, 200, 208, 50);
+		frame.getContentPane().add(btnReportStudentAbsent);
 		
 		JTextPane textPane = new JTextPane();
 		textPane.setBounds(12, 13, 408, 165);
 		textPane.setEditable(false);
 		if(queue.size()==0) {
 			textPane.setText("No appointments in Queue");
-			btnNewButton.setEnabled(false);
+			btnReportStudentAbsent.setEnabled(false);
 			btnReportStudentPresent.setEnabled(false);
 		}else {
 			currRes=queue.peek();
-			long Ltime=(System.currentTimeMillis()-currRes.time)/60000;
+			long Ltime=(currentTime-currRes.time)/60000;
 			textPane.setText("Student Email : "+currRes.emailId+" \nQuestions : "+currRes.sampleQuestion+"\nStudent is late by "+String.valueOf(Ltime)+" mins");
 		}
 		frame.getContentPane().add(textPane);
@@ -151,7 +151,7 @@ public class secProject {
 		currRes.status="Student Marked Present";
 	}
 	protected void markStudentAbsent() {
-		long Ltime=(System.currentTimeMillis()-currRes.time)/60000;
+		long Ltime=(currentTime-currRes.time)/60000;
 		if(Ltime<10) {
 			queue.peek().status="Moved to End";
 			currRes.status="Moved to End";
