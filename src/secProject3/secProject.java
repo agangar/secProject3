@@ -56,7 +56,7 @@ public class secProject {
 		for(int i=0;i<num;i++) {
 			times.add(TimeOptions.get(r.nextInt(3)));
 		}
-		Collections.sort(times);
+//		Collections.sort(times);
 		int i=0;
 		for(Long time:times) {
 			System.out.println((currentTime-time)/60000);
@@ -97,7 +97,7 @@ public class secProject {
 				markStudentPresent();
 				frame.setVisible(false);
 				frame2.setVisible(true);
-				String queueString="";
+				String queueString="Reservation Queue:";
 				int i=1;
 				for(Reservation resv: queue) {
 					long Ltime=(currentTime-resv.time)/60000;
@@ -141,7 +141,7 @@ public class secProject {
 		}else {
 			currRes=queue.peek();
 			long Ltime=(currentTime-currRes.time)/60000;
-			textPane.setText("Student Email : "+currRes.emailId+" \nQuestions : "+currRes.sampleQuestion+"\nStudent is late by "+String.valueOf(Ltime)+" mins");
+			textPane.setText("Student Email : "+currRes.emailId+" \nQuestions : "+currRes.sampleQuestion);/*+"\nStudent is late by "+String.valueOf(Ltime)+" mins");*/
 		}
 		frame.getContentPane().add(textPane);
 		
