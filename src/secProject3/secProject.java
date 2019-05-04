@@ -24,6 +24,9 @@ public class secProject {
 	private JFrame frame,frame2;
 	static Reservation currRes;
 	static Queue<Reservation> queue=new LinkedList<Reservation>();
+	public static Queue<Reservation> getQueue() {
+		return queue;
+	}
 	static List<String> emails=new ArrayList<String>(Arrays.asList("student1@buffalo.edu","student2@buffalo.edu","student3@buffalo.edu","student4@buffalo.edu","student5@buffalo.edu"));
 	static List<String> questions=new ArrayList<String>(Arrays.asList("question1","question2?","question3?","question4?","question5?"));
 	static Long currentTime;
@@ -47,7 +50,7 @@ public class secProject {
 		});
 	}
 
-	private static void populateResrvationQueue() {
+	public static void populateResrvationQueue() {
 		Random r= new Random();
 		int num=r.nextInt(5);
 		List<Long> times=new ArrayList<Long>();
