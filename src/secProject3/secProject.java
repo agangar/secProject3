@@ -30,6 +30,7 @@ public class secProject {
 	static List<String> emails=new ArrayList<String>(Arrays.asList("student1@buffalo.edu","student2@buffalo.edu","student3@buffalo.edu","student4@buffalo.edu","student5@buffalo.edu"));
 	static List<String> questions=new ArrayList<String>(Arrays.asList("question1","question2?","question3?","question4?","question5?"));
 	static Long currentTime;
+	static Long Ltime;
 	
 
 	/**
@@ -103,7 +104,7 @@ public class secProject {
 				String queueString="Reservation Queue:";
 				int i=1;
 				for(Reservation resv: queue) {
-					long Ltime=(currentTime-resv.time)/60000;
+					Long Ltime=(currentTime-resv.time)/60000;
 					queueString+="\n"+i+": Student Email : "+resv.emailId+" \nQuestions : "+resv.sampleQuestion+"\nStudent is late by "+String.valueOf(Ltime)+" mins\nStatus : "+resv.status+"\n";
 					i++;
 				}
@@ -141,30 +142,38 @@ public class secProject {
 			textPane.setText("No appointments in Queue");
 			btnReportStudentAbsent.setEnabled(false);
 			btnReportStudentPresent.setEnabled(false);
-		}else {
+		}
+		else {
 			currRes=queue.peek();
-			long Ltime=(currentTime-currRes.time)/60000;
+			 Ltime=(currentTime-currRes.time)/60000;
 			textPane.setText("Student Email : "+currRes.emailId+" \nQuestions : "+currRes.sampleQuestion);/*+"\nStudent is late by "+String.valueOf(Ltime)+" mins");*/
 		}
 		frame.getContentPane().add(textPane);
 		
 	}
 
-	protected void markStudentPresent() {
+	public static void markStudentPresent() {
+		if(currRes != null )
 		currRes.status="Student Marked Present";
 	}
-	protected void markStudentAbsent() {
-		long Ltime=(currentTime-currRes.time)/60000;
-		if(Ltime<10) {
-			queue.peek().status="Moved to End";
-			currRes.status="Moved to End";
-			queue.add(queue.poll());
-		}else {
-			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-			LocalDate localDate = LocalDate.now();
-			System.out.println("Banned on"+localDate);
-			queue.peek().status="Student Banned on "+String.valueOf(dtf.format(localDate));
-			currRes.status="Student Banned on "+String.valueOf(dtf.format(localDate));
+	public static void markStudentAbsent() {
+		Ltime=(currentTime-currRes.time)/60000;
+		if(currRes != null) {
+			if(Ltime<10) {
+				queue.peek().status="Moved to End";
+				currRes.status="Moved to End";
+				queue.add(queue.poll());
+			}
+			else {
+				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+				LocalDate localDate = LocalDate.now();
+				System.out.println("Banned on"+localDate);
+				String banned = "Student Banned on "+String.valueOf(dtf.format(localDate));
+				queue.peek().status=banned;
+				currRes.status=banned;
+			}
 		}
 	}
 }
+
+// randomness in queue and student numbers 
