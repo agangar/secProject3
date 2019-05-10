@@ -13,72 +13,11 @@ import java.util.Queue;
 import org.junit.Test;
 
 public class ReservationTesting {
-
-	 @Test
-	public void testPopulateResrvationQueue() {
-		//secProject sec = new secProject();
-		Queue<Reservation> queue = secProject.populateReservationQueue();
-		if(!queue.isEmpty()) {
-			assertTrue(queue.size() >=0 );
-			assertTrue(queue.size() < 5); // Assertion Error in this Line, Something is wrong with the condition
-			int sampleQuestionCount = 0;
-			for(Reservation item : queue){
-				sampleQuestionCount++;
-				assertNotEquals(item.getEmailId(), null);
-			}
-			assertTrue(sampleQuestionCount >= queue.size()/2);
-		}
-	}
 	
 	@Test
-	public void testStudentPresent() {
-		secProject sec = new secProject(secProject.populateReservationQueue());
-		if(!sec.getQueue().isEmpty() )
-		{
-			Reservation res = sec.markStudentPresent();
-			assertEquals(res.getStatus(), "Student Marked Present");
-		}
-		
-	}
-	
-//	@Test
-//	public void testStudentAbsent() {
-//		secProject sec = new secProject();
-//		sec.populateResrvationQueue();
-//		sec.markStudentAbsent();
-//		if(sec.queue != null) {
-//			
-//			Queue<Reservation> localQueue = sec.getQueue();
-//			if(sec.Ltime < 10 ) {
-//				if(!localQueue.isEmpty()) 	{
-//					while(1!=localQueue.size()) {
-//						localQueue.poll();
-//					}
-//				}
-//				assertEquals(localQueue.peek().status, "Moved to End");
-//			}
-//			else {
-//				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-//				LocalDate localDate = LocalDate.now();
-//				String banned = "Student Banned on "+String.valueOf(dtf.format(localDate));
-//				assertEquals(localQueue.peek().status, banned);
-//			}
-//		}
-//	}
-	
-	//Report Student Absent
-	
-	@Test
-	public void testfetchFirstAppointment() {
-		secProject sec = new secProject(secProject.populateReservationQueue());
-	//	sec.populateResrvationQueue();
-		if(!sec.getQueue().isEmpty()) {
-			assertNotNull(sec.fetchFirstAppointment());
-		}
-	}
-	
-	
-	@Test
+	/**
+	 * Tests markStudentAbsent functionality when student is marked absent after 10 min of reservation time
+	 */
 	public void testStudentAbsentAfterTenMinutes() {
 		long currentTime=System.currentTimeMillis();
 		 List<String> emails=new ArrayList<String>(Arrays.asList("student1@buffalo.edu","student2@buffalo.edu","student3@buffalo.edu","student4@buffalo.edu","student5@buffalo.edu"));
@@ -100,6 +39,9 @@ public class ReservationTesting {
 	}
 	
 	@Test
+	/**
+	 * Tests markStudentAbsent functionality when student is marked absent before 10 min of reservation time
+	 */
 	public void testStudentAbsentBeforeTenMinutes() {
 		long currentTime=System.currentTimeMillis();
 		 List<String> emails=new ArrayList<String>(Arrays.asList("student1@buffalo.edu","student2@buffalo.edu","student3@buffalo.edu","student4@buffalo.edu","student5@buffalo.edu"));
@@ -118,6 +60,51 @@ public class ReservationTesting {
 		}
 		assertEquals(localQueue.peek().getStatus(), "Student Absent");
 		
+	}
+	
+	 @Test
+	 /**
+	  * Tests whether reservation queue is populated correctly
+	  */
+	public void testPopulateReservationQueue() {
+		//secProject sec = new secProject();
+		Queue<Reservation> queue = secProject.populateReservationQueue();
+		if(!queue.isEmpty()) {
+			assertTrue(queue.size() >=0 );
+			assertTrue(queue.size() < 5); // Assertion Error in this Line, Something is wrong with the condition
+			int sampleQuestionCount = 0;
+			for(Reservation item : queue){
+				sampleQuestionCount++;
+				assertNotEquals(item.getEmailId(), null);
+			}
+			assertTrue(sampleQuestionCount >= queue.size()/2);
+		}
+	}
+	
+	@Test
+	/**
+	 * Tests whether marking student attendance is done correctly
+	 */
+	public void testStudentPresent() {
+		secProject sec = new secProject(secProject.populateReservationQueue());
+		if(!sec.getQueue().isEmpty() )
+		{
+			Reservation res = sec.markStudentPresent();
+			assertEquals(res.getStatus(), "Student Marked Present");
+		}
+		
+	}
+	
+	@Test
+	/**
+	 * Tests whether first reservation  is fetched correctly
+	 */
+	public void testfetchFirstAppointment() {
+		secProject sec = new secProject(secProject.populateReservationQueue());
+	//	sec.populateResrvationQueue();
+		if(!sec.getQueue().isEmpty()) {
+			assertNotNull(sec.fetchFirstAppointment());
+		}
 	}
 	
 }
