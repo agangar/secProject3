@@ -35,8 +35,6 @@ public class secProject {
 	static List<String> questions=new ArrayList<String>(Arrays.asList("question1","","question3?","","question5?"));
 	static Long currentTime;
 	static Long Ltime;
-	static Reservation banned=null;
-	static Reservation present=null;
 	
 
 	/**
@@ -108,10 +106,10 @@ public class secProject {
 		JButton btnReportStudentPresent = new JButton("Report Student Present");
 		btnReportStudentPresent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				markStudentPresent();
+				Reservation present=markStudentPresent();
 				frame.setVisible(false);
 				frame2.setVisible(true);
-				String queueString=fetchQueueStatus();
+				String queueString=fetchQueueStatus(present);
 				resQueue.setText(queueString);
 			}
 		});
@@ -121,10 +119,10 @@ public class secProject {
 		JButton btnReportStudentAbsent = new JButton("Report Student Absent");
 		btnReportStudentAbsent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				markStudentAbsent();
+				Reservation banned=markStudentAbsent();
 				frame.setVisible(false);
 				frame2.setVisible(true);
-				String queueString=fetchQueueStatus();
+				String queueString=fetchQueueStatus(banned);
 				resQueue.setText(queueString);
 			}
 		});
@@ -163,19 +161,21 @@ public class secProject {
 	/**
 	 * Changes the status of first reservation in queue to present
 	 */
-	public static void markStudentPresent() {
+	public static Reservation markStudentPresent() {
+		Reservation present=null;
 		if(!queue.isEmpty() ) {
-		queue.peek().status="Student Marked Present";
-		present=queue.poll();
-		System.out.println("queue size"+" "+queue.size());
+			queue.peek().status="Student Marked Present";
+			present=queue.poll();
 		}
+		return present;
 	}
 	
 	
 	/**
 	 * Changes the queue based on when the student is marked absent.
 	 */
-	public static void markStudentAbsent() {
+	public static Reservation markStudentAbsent() {
+		Reservation banned=null;
 		Ltime=(currentTime-queue.peek().time)/60000;
 		if(!queue.isEmpty()) {
 			if(Ltime<10) {
@@ -191,14 +191,16 @@ public class secProject {
 				banned=queue.poll();
 			}
 		}
+		return banned;
 	}
 	
 	/**
 	 * Converts the queue to string for displaying it
+	 * @param res 
 	 * 
 	 * @return {String} returns the composed string from queue
 	 */
-	public static String fetchQueueStatus() {
+	public static String fetchQueueStatus(Reservation res) {
 		int i=1;
 		String queueString="";
 		
@@ -209,13 +211,9 @@ public class secProject {
 			i++;	
 		}
 		queueString += "\nSize of Queue : "+String.valueOf(queue.size())+"\n";
-		if (banned!=null) {
-			long Ltime=(currentTime-banned.time)/60000;
-			queueString+="---------\nPrevious Reservation:\n"+"Student Email : "+banned.emailId+" \nQuestions : "+banned.sampleQuestion+"\nStudent is late by "+String.valueOf(Ltime)+" mins\nStatus : "+banned.status+"\n---------\n";
-		}
-		if (present!=null) {
-			long Ltime=(currentTime-present.time)/60000;
-			queueString+="---------\nPrevious Reservation:\n"+"Student Email : "+present.emailId+" \nQuestions : "+present.sampleQuestion+"\nStudent is late by "+String.valueOf(Ltime)+" mins\nStatus : "+present.status+"\n---------\n";
+		if (res!=null) {
+			long Ltime=(currentTime-res.time)/60000;
+			queueString+="---------\nPrevious Reservation:\n"+"Student Email : "+res.emailId+" \nQuestions : "+res.sampleQuestion+"\nStudent is late by "+String.valueOf(Ltime)+" mins\nStatus : "+res.status+"\n---------\n";
 		}
 		return queueString;
 		
