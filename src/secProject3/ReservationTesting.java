@@ -15,7 +15,7 @@ import org.junit.Test;
 
 public class ReservationTesting {
 
-	@Test
+/*	@Test
 	public void testPopulateResrvationQueue() {
 		secProject sec = new secProject();
 //		long currentTime=System.currentTimeMillis();
@@ -52,7 +52,7 @@ public class ReservationTesting {
 			
 			Queue<Reservation> localQueue = sec.getQueue();
 			if(sec.Ltime < 10 ) {
-				if(!localQueue.isEmpty()) {
+				if(!localQueue.isEmpty()) 	{
 					while(1!=localQueue.size()) {
 						localQueue.poll();
 					}
@@ -78,5 +78,34 @@ public class ReservationTesting {
 			assertNotNull(sec.queue.peek());
 		}
 	}
-
+	*/
+	
+	@Test
+	public void testStudentAbsentAfterTenMinutes() {
+		secProject sec = new secProject();
+		sec.populateQueue(11);
+		int size = sec.getQueue().size();
+		sec.markStudentAbsent();
+		assertEquals(size - 1, sec.getQueue().size());
+		
+	}
+	
+	@Test
+	public void testStudentAbsentBeforeTenMinutes() {
+		secProject sec = new secProject();
+		sec.populateQueue(5);
+		sec.markStudentAbsent();
+		Queue<Reservation> localQueue = sec.getQueue();
+		if(!localQueue.isEmpty()) 	{
+			while(1!=localQueue.size()) {
+				localQueue.poll();
+			}
+		}
+		assertEquals(localQueue.peek().status, "Student Marked Absent");
+		
+	}
+	
 }
+	
+
+

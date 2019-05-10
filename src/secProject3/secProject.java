@@ -142,6 +142,14 @@ public class secProject {
 		return res;
 	}
 
+	public static void populateQueue(int min) {
+		
+		currentTime=System.currentTimeMillis();
+		Reservation res=new Reservation(emails.get(0),questions.get(0),currentTime-(min* 60000));
+		queue.add(res);
+		
+	}
+	
 	public static void markStudentPresent() {
 		if(!queue.isEmpty() )
 		queue.peek().status="Student Marked Present";
@@ -150,7 +158,7 @@ public class secProject {
 		Ltime=(currentTime-queue.peek().time)/60000;
 		if(!queue.isEmpty()) {
 			if(Ltime<10) {
-				queue.peek().status="Moved to End";
+				queue.peek().status="Student Marked Absent";
 				queue.add(queue.poll());
 			}
 			else {
