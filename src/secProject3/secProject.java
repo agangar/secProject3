@@ -22,7 +22,6 @@ import java.awt.event.ActionEvent;
 public class secProject {
 
 	private JFrame frame,frame2;
-	static Reservation currRes;
 	static Queue<Reservation> queue=new LinkedList<Reservation>();
 	public static Queue<Reservation> getQueue() {
 		return queue;
@@ -60,13 +59,13 @@ public class secProject {
 		for(int i=0;i<num;i++) {
 			times.add(TimeOptions.get(r.nextInt(3)));
 		}
-//		Collections.sort(times);
-		int i=0;
+
+		int j=0;
 		for(Long time:times) {
 			System.out.println((currentTime-time)/60000);
-			Reservation res=new Reservation(emails.get(i),questions.get(4-i),time);
+			Reservation res=new Reservation(emails.get(j),questions.get(4-j),time);
 			queue.add(res);
-			i++;
+			j++;
 		}
 	}
 
@@ -101,14 +100,7 @@ public class secProject {
 				markStudentPresent();
 				frame.setVisible(false);
 				frame2.setVisible(true);
-				String queueString="Reservation Queue:";
-				int i=1;
-				for(Reservation resv: queue) {
-					Long Ltime=(currentTime-resv.time)/60000;
-					queueString+="\n"+i+": Student Email : "+resv.emailId+" \nQuestions : "+resv.sampleQuestion+"\nStudent is late by "+String.valueOf(Ltime)+" mins\nStatus : "+resv.status+"\n";
-					i++;
-				}
-				System.out.println(queueString);
+				String queueString=fetchQueueStatus();
 				resQueue.setText(queueString);
 			}
 		});
@@ -121,14 +113,7 @@ public class secProject {
 				markStudentAbsent();
 				frame.setVisible(false);
 				frame2.setVisible(true);
-				int i=1;
-				String queueString="Reservation Queue:";
-				for(Reservation resv: queue) {
-					long Ltime=(currentTime-resv.time)/60000;
-					queueString+="\n"+i+": Student Email : "+resv.emailId+" \nQuestions : "+resv.sampleQuestion+"\nStudent is late by "+String.valueOf(Ltime)+" mins\nStatus : "+resv.status+"\n";
-					i++;
-					
-				}
+				String queueString=fetchQueueStatus();
 				resQueue.setText(queueString);
 			}
 		});
@@ -138,30 +123,34 @@ public class secProject {
 		JTextPane textPane = new JTextPane();
 		textPane.setBounds(12, 13, 408, 165);
 		textPane.setEditable(false);
-		if(queue.size()==0) {
-			textPane.setText("No appointments in Queue");
+		Reservation res = fetchFirstAppointment();
+		if(res==null) {
 			btnReportStudentAbsent.setEnabled(false);
 			btnReportStudentPresent.setEnabled(false);
-		}
-		else {
-			currRes=queue.peek();
-			 Ltime=(currentTime-currRes.time)/60000;
-			textPane.setText("Student Email : "+currRes.emailId+" \nQuestions : "+currRes.sampleQuestion);/*+"\nStudent is late by "+String.valueOf(Ltime)+" mins");*/
+			textPane.setText("No appointments in Queue");
+		}else {
+			textPane.setText("Student Email : "+queue.peek().emailId+" \nQuestions : "+queue.peek().sampleQuestion);
 		}
 		frame.getContentPane().add(textPane);
 		
 	}
+	public Reservation fetchFirstAppointment(){
+		Reservation res=null;
+		if(!queue.isEmpty()) {
+			res=queue.peek();
+		}
+		return res;
+	}
 
 	public static void markStudentPresent() {
-		if(currRes != null )
-		currRes.status="Student Marked Present";
+		if(!queue.isEmpty() )
+		queue.peek().status="Student Marked Present";
 	}
 	public static void markStudentAbsent() {
-		Ltime=(currentTime-currRes.time)/60000;
-		if(currRes != null) {
+		Ltime=(currentTime-queue.peek().time)/60000;
+		if(!queue.isEmpty()) {
 			if(Ltime<10) {
 				queue.peek().status="Moved to End";
-				currRes.status="Moved to End";
 				queue.add(queue.poll());
 			}
 			else {
@@ -170,10 +159,32 @@ public class secProject {
 				System.out.println("Banned on"+localDate);
 				String banned = "Student Banned on "+String.valueOf(dtf.format(localDate));
 				queue.peek().status=banned;
-				currRes.status=banned;
 			}
 		}
 	}
+	
+	
+	public static String fetchQueueStatus() {
+		int i=1;
+		String queueString="";
+		Reservation res=null;
+		if(queue.peek().status.contains("Banned")) {
+			res=queue.poll();
+		}
+		
+		queueString+="Reservation Queue Status:";
+		for(Reservation resv: queue) {
+			long Ltime=(currentTime-resv.time)/60000;
+			queueString+="\n"+i+": Student Email : "+resv.emailId+" \nQuestions : "+resv.sampleQuestion+"\nStudent is late by "+String.valueOf(Ltime)+" mins\nStatus : "+resv.status+"\n";
+			i++;	
+		}
+		queueString += "\nSize of Queue : "+String.valueOf(queue.size())+"\n";
+		if (res!=null)
+			queueString+="---------\n"+"Student Email : "+res.emailId+" \nQuestions : "+res.sampleQuestion+"\nStudent is late by "+String.valueOf(Ltime)+" mins\nStatus : "+res.status+"\n---------\n";
+		return queueString;
+		
+	}
+	
 }
 
 // randomness in queue and student numbers 
