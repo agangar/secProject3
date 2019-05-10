@@ -32,10 +32,11 @@ public class secProject {
 		return queue;
 	}
 	static List<String> emails=new ArrayList<String>(Arrays.asList("student1@buffalo.edu","student2@buffalo.edu","student3@buffalo.edu","student4@buffalo.edu","student5@buffalo.edu"));
-	static List<String> questions=new ArrayList<String>(Arrays.asList("question1","question2?","question3?","question4?","question5?"));
+	static List<String> questions=new ArrayList<String>(Arrays.asList("question1","","question3?","","question5?"));
 	static Long currentTime;
 	static Long Ltime;
 	static Reservation banned=null;
+	static Reservation present=null;
 	
 
 	/**
@@ -57,7 +58,7 @@ public class secProject {
 	}
 	
 	/**
-	 * Fills up random number of reservations in a queue
+	 * Fills up random number (between 0 and 4) of reservations in a queue
 	 */
 	public static void populateResrvationQueue() {
 		Random r= new Random();
@@ -79,14 +80,14 @@ public class secProject {
 	}
 
 	/**
-	 * Create the application.
+	 * Creates the application.
 	 */
 	public secProject() {
 		initialize();
 	}
 
 	/**
-	 * Initialize the contents of the ui frame.
+	 * Initializes the contents of the ui frame.
 	 * Holds onClick Listeners for UI components.
 	 */
 	private void initialize() {
@@ -163,8 +164,11 @@ public class secProject {
 	 * Changes the status of first reservation in queue to present
 	 */
 	public static void markStudentPresent() {
-		if(!queue.isEmpty() )
+		if(!queue.isEmpty() ) {
 		queue.peek().status="Student Marked Present";
+		present=queue.poll();
+		System.out.println("queue size"+" "+queue.size());
+		}
 	}
 	
 	
@@ -205,11 +209,16 @@ public class secProject {
 			i++;	
 		}
 		queueString += "\nSize of Queue : "+String.valueOf(queue.size())+"\n";
-		if (banned!=null)
-			queueString+="---------\n"+"Student Email : "+banned.emailId+" \nQuestions : "+banned.sampleQuestion+"\nStudent is late by "+String.valueOf(Ltime)+" mins\nStatus : "+banned.status+"\n---------\n";
+		if (banned!=null) {
+			long Ltime=(currentTime-banned.time)/60000;
+			queueString+="---------\nPrevious Reservation:\n"+"Student Email : "+banned.emailId+" \nQuestions : "+banned.sampleQuestion+"\nStudent is late by "+String.valueOf(Ltime)+" mins\nStatus : "+banned.status+"\n---------\n";
+		}
+		if (present!=null) {
+			long Ltime=(currentTime-present.time)/60000;
+			queueString+="---------\nPrevious Reservation:\n"+"Student Email : "+present.emailId+" \nQuestions : "+present.sampleQuestion+"\nStudent is late by "+String.valueOf(Ltime)+" mins\nStatus : "+present.status+"\n---------\n";
+		}
 		return queueString;
 		
 	}
 	
 }
-
