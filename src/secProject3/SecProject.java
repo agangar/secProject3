@@ -3,7 +3,6 @@ package secProject3;
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -11,8 +10,6 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JButton;
-import java.awt.BorderLayout;
-import javax.swing.SwingConstants;
 import javax.swing.JTextPane;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
@@ -20,11 +17,11 @@ import java.time.format.DateTimeFormatter;
 import java.awt.event.ActionEvent;
 
 /**
- * Launches ui frame and populates a queue for reservation. 
+ * Launches UI frame and populates a queue for reservation. 
  * performs specific task based on UI activity 
  * 
  */
-public class secProject {
+public class SecProject {
 
     private JFrame frame,frame2;
 	static private Queue<Reservation> queue=new LinkedList<Reservation>();
@@ -46,7 +43,7 @@ public class secProject {
 			public void run() {
 				try {
 					Queue<Reservation> queue = populateReservationQueue();
-					secProject window = new secProject(queue);
+					SecProject window = new SecProject(queue);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -69,9 +66,8 @@ public class secProject {
 		}
 
 		int j=0;
-		Queue queue = new LinkedList<Reservation>();
+		Queue<Reservation> queue = new LinkedList<Reservation>();
 		for(Long time:times) {
-			System.out.println((currentTime-time)/60000);
 			Reservation res=new Reservation(emails.get(j),questions.get(4-j),time);
 			queue.add(res);
 			j++;
@@ -82,8 +78,8 @@ public class secProject {
 	/**
 	 * Creates the application.
 	 */
-	public secProject(Queue<Reservation> queue) {
-		this.queue = queue;
+	public SecProject(Queue<Reservation> queue) {
+		SecProject.queue = queue;
 		currentTime = System.currentTimeMillis();
 		initialize();
 	}
@@ -149,7 +145,7 @@ public class secProject {
 	}
 	
 	/**
-	 * Retreives first appointment in queue.
+	 * Retrieves first appointment in queue.
 	 * If no appointment in queue returns null.
 	 * 
 	 * @returns {Reservation} returns first object of type Reservation from queue
@@ -169,6 +165,8 @@ public class secProject {
 	
 	/**
 	 * Changes the status of first reservation in queue to present
+	 * 
+	 * @return {Reservation} returns the reservation removed from queue
 	 */
 	public static Reservation markStudentPresent() {
 		Reservation present=null;
@@ -181,6 +179,8 @@ public class secProject {
 	
 	/**
 	 * Changes the queue based on when the student is marked absent.
+	 * 
+	 * @return {Reservation} returns the reservation removed from queue
 	 */
 	public static Reservation markStudentAbsent() {
 		Reservation banned=null;
@@ -193,7 +193,6 @@ public class secProject {
 			else {
 				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 				LocalDate localDate = LocalDate.now();
-				System.out.println("Banned on"+localDate);
 				String banned_Date = "Student Banned on "+String.valueOf(dtf.format(localDate));
 				queue.peek().setStatus(banned_Date);
 				banned=queue.poll();
@@ -204,7 +203,7 @@ public class secProject {
 	
 	/**
 	 * Converts the queue to string for displaying it
-	 * @param res 
+	 * @param res - Appointment to be displayed after the queue
 	 * 
 	 * @return {String} returns the composed string from queue
 	 */

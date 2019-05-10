@@ -26,8 +26,7 @@ public class ReservationTesting {
 		Reservation res=new Reservation(emails.get(0),questions.get(0),currentTime-(11* 60000));
 		Queue< Reservation> queue = new LinkedList<Reservation>();
 		queue.add(res);
-		secProject sec = new secProject(queue);
-		//sec.populateQueue(11);
+		SecProject sec = new SecProject(queue);
 		int size = sec.getQueue().size();
 		Reservation bannedRes = sec.markStudentAbsent();
 		assertNotNull(bannedRes);
@@ -50,7 +49,7 @@ public class ReservationTesting {
 		Reservation res=new Reservation(emails.get(0),questions.get(0),currentTime-(5* 60000));
 		Queue< Reservation> queue = new LinkedList<Reservation>();
 		queue.add(res);
-		secProject sec = new secProject(queue);
+		SecProject sec = new SecProject(queue);
 		sec.markStudentAbsent();
 		Queue<Reservation> localQueue = sec.getQueue();
 		if(!localQueue.isEmpty()) 	{
@@ -67,8 +66,7 @@ public class ReservationTesting {
 	  * Tests whether reservation queue is populated correctly
 	  */
 	public void testPopulateReservationQueue() {
-		//secProject sec = new secProject();
-		Queue<Reservation> queue = secProject.populateReservationQueue();
+		Queue<Reservation> queue = SecProject.populateReservationQueue();
 		if(!queue.isEmpty()) {
 			assertTrue(queue.size() >=0 );
 			assertTrue(queue.size() < 5); // Assertion Error in this Line, Something is wrong with the condition
@@ -86,7 +84,7 @@ public class ReservationTesting {
 	 * Tests whether marking student attendance is done correctly
 	 */
 	public void testStudentPresent() {
-		secProject sec = new secProject(secProject.populateReservationQueue());
+		SecProject sec = new SecProject(SecProject.populateReservationQueue());
 		if(!sec.getQueue().isEmpty() )
 		{
 			Reservation res = sec.markStudentPresent();
@@ -100,8 +98,7 @@ public class ReservationTesting {
 	 * Tests whether first reservation  is fetched correctly
 	 */
 	public void testfetchFirstAppointment() {
-		secProject sec = new secProject(secProject.populateReservationQueue());
-	//	sec.populateResrvationQueue();
+		SecProject sec = new SecProject(SecProject.populateReservationQueue());
 		if(!sec.getQueue().isEmpty()) {
 			assertNotNull(sec.fetchFirstAppointment());
 		}

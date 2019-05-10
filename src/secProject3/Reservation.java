@@ -36,7 +36,7 @@ public class Reservation{
 	}
 	
 	/**
-	 * Retreives student's email for that appointment
+	 * Retrieves student's email for that appointment
 	 * @return {String} Returns the email of the student
 	 */
 	public String getEmailId() {
@@ -52,7 +52,7 @@ public class Reservation{
 	}
 	
 	/**
-	 * Retreives student's question for that appointment
+	 * Retrieves student's question for that appointment
 	 * @return {String} Returns the question of the student
 	 */
 	public String getSampleQuestion() {
@@ -68,7 +68,7 @@ public class Reservation{
 	}
 	
 	/**
-	 * Retreives student's Time for that appointment
+	 * Retrieves student's Time for that appointment
 	 * @return {String} Returns the time of the Reservation
 	 */
 	public long getTime() {
