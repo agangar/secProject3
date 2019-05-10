@@ -31,13 +31,10 @@ public class secProject {
 	public static Queue<Reservation> getQueue() {
 		return queue;
 	}
-	
-	
-	static private List<String> emails=new ArrayList<String>(Arrays.asList("student1@buffalo.edu","student2@buffalo.edu","student3@buffalo.edu","student4@buffalo.edu","student5@buffalo.edu"));
-	static private List<String> questions=new ArrayList<String>(Arrays.asList("question1","question2?","question3?","question4?","question5?"));
-	static private Long currentTime;
-	static private Reservation banned=null;
-	
+
+	static List<String> emails=new ArrayList<String>(Arrays.asList("student1@buffalo.edu","student2@buffalo.edu","student3@buffalo.edu","student4@buffalo.edu","student5@buffalo.edu"));
+	static List<String> questions=new ArrayList<String>(Arrays.asList("question1","","question3?","","question5?"));
+	static Long currentTime;
 
 	/**
 	 * Launch the application.
@@ -48,7 +45,7 @@ public class secProject {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Queue<Reservation> queue = populateResrvationQueue();
+					Queue<Reservation> queue = populateReservationQueue();
 					secProject window = new secProject(queue);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
@@ -59,9 +56,9 @@ public class secProject {
 	}
 	
 	/**
-	 * Fills up random number of reservations in a queue
+	 * Fills up random number (between 0 and 4) of reservations in a queue
 	 */
-	public static Queue<Reservation> populateResrvationQueue() {
+	public static Queue<Reservation> populateReservationQueue() {
 		Random r= new Random();
 		int num=r.nextInt(5);
 		List<Long> times=new ArrayList<Long>();
@@ -83,7 +80,7 @@ public class secProject {
 	}
 
 	/**
-	 * Create the application.
+	 * Creates the application.
 	 */
 	public secProject(Queue<Reservation> queue) {
 		this.queue = queue;
@@ -92,7 +89,7 @@ public class secProject {
 	}
 
 	/**
-	 * Initialize the contents of the ui frame.
+	 * Initializes the contents of the ui frame.
 	 * Holds onClick Listeners for UI components.
 	 */
 	private void initialize() {
@@ -113,10 +110,10 @@ public class secProject {
 		JButton btnReportStudentPresent = new JButton("Report Student Present");
 		btnReportStudentPresent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				markStudentPresent();
+				Reservation present=markStudentPresent();
 				frame.setVisible(false);
 				frame2.setVisible(true);
-				String queueString=fetchQueueStatus();
+				String queueString=fetchQueueStatus(present);
 				resQueue.setText(queueString);
 			}
 		});
@@ -126,10 +123,10 @@ public class secProject {
 		JButton btnReportStudentAbsent = new JButton("Report Student Absent");
 		btnReportStudentAbsent.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				markStudentAbsent();
+				Reservation banned=markStudentAbsent();
 				frame.setVisible(false);
 				frame2.setVisible(true);
-				String queueString=fetchQueueStatus();
+				String queueString=fetchQueueStatus(banned);
 				resQueue.setText(queueString);
 			}
 		});
@@ -173,17 +170,20 @@ public class secProject {
 	/**
 	 * Changes the status of first reservation in queue to present
 	 */
-
-	public static void markStudentPresent() {
-		if(!queue.isEmpty() )
-		queue.peek().setStatus("Student Marked Present");
+	public static Reservation markStudentPresent() {
+		Reservation present=null;
+		if(!queue.isEmpty() ) {
+			queue.peek().setStatus("Student Marked Present");
+			present=queue.poll();
+		}
+		return present;
 	}
-	
 	
 	/**
 	 * Changes the queue based on when the student is marked absent.
 	 */
-	public static void markStudentAbsent() {
+	public static Reservation markStudentAbsent() {
+		Reservation banned=null;
 		long lTime=(currentTime-queue.peek().getTime())/60000;
 		if(!queue.isEmpty()) {
 			if(lTime<10) {
@@ -199,29 +199,32 @@ public class secProject {
 				banned=queue.poll();
 			}
 		}
+		return banned;
 	}
 	
 	/**
 	 * Converts the queue to string for displaying it
+	 * @param res 
 	 * 
 	 * @return {String} returns the composed string from queue
 	 */
-	public static String fetchQueueStatus() {
+	public static String fetchQueueStatus(Reservation res) {
 		int i=1;
 		String queueString="";
-		long Ltime = 0;
+		long lTime = 0;
 		queueString+="Reservation Queue Status:";
 		for(Reservation resv: queue) {
-			Ltime=(currentTime-resv.getTime())/60000;
-			queueString+="\n"+i+": Student Email : "+resv.getEmailId()+" \nQuestions : "+resv.getSampleQuestion()+"\nStudent is late by "+String.valueOf(Ltime)+" mins\nStatus : "+resv.getStatus()+"\n";
+			lTime=(currentTime-resv.getTime())/60000;
+			queueString+="\n"+i+": Student Email : "+resv.getEmailId()+" \nQuestions : "+resv.getSampleQuestion()+"\nStudent is late by "+String.valueOf(lTime)+" mins\nStatus : "+resv.getStatus()+"\n";
 			i++;	
 		}
 		queueString += "\nSize of Queue : "+String.valueOf(queue.size())+"\n";
-		if (banned!=null)
-			queueString+="---------\n"+"Student Email : "+banned.getEmailId()+" \nQuestions : "+banned.getSampleQuestion()+"\nStudent is late by "+String.valueOf(Ltime)+" mins\nStatus : "+banned.getStatus()+"\n---------\n";
+		if (res!=null) {
+			lTime=(currentTime-res.getTime())/60000;
+			queueString+="---------\nPrevious Reservation:\n"+"Student Email : "+res.getEmailId()+" \nQuestions : "+res.getSampleQuestion()+"\nStudent is late by "+String.valueOf(lTime)+" mins\nStatus : "+res.getStatus()+"\n---------\n";
+		}
 		return queueString;
 		
 	}
 	
 }
-
