@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -15,19 +14,17 @@ import org.junit.Test;
 
 public class ReservationTesting {
 
-/*	@Test
+	 @Test
 	public void testPopulateResrvationQueue() {
-		secProject sec = new secProject();
-//		long currentTime=System.currentTimeMillis();
-		sec.populateResrvationQueue();
-		Queue<Reservation> queue = sec.getQueue();
+		//secProject sec = new secProject();
+		Queue<Reservation> queue = secProject.populateReservationQueue();
 		if(!queue.isEmpty()) {
 			assertTrue(queue.size() >=0 );
 			assertTrue(queue.size() < 5); // Assertion Error in this Line, Something is wrong with the condition
 			int sampleQuestionCount = 0;
 			for(Reservation item : queue){
 				sampleQuestionCount++;
-				assertNotEquals(item.emailId, null);
+				assertNotEquals(item.getEmailId(), null);
 			}
 			assertTrue(sampleQuestionCount >= queue.size()/2);
 		}
@@ -35,65 +32,83 @@ public class ReservationTesting {
 	
 	@Test
 	public void testStudentPresent() {
-		secProject sec = new secProject();
-	//	sec.populateResrvationQueue();
-	//	Queue<Reservation> queue = sec.getQueue();
-		sec.markStudentPresent();
-		if(sec.queue.peek() != null )
-		assertEquals(sec.queue.peek().status, "Student Marked Present");
+		secProject sec = new secProject(secProject.populateReservationQueue());
+		if(!sec.getQueue().isEmpty() )
+		{
+			Reservation res = sec.markStudentPresent();
+			assertEquals(res.getStatus(), "Student Marked Present");
+		}
+		
 	}
 	
-	@Test
-	public void testStudentAbsent() {
-		secProject sec = new secProject();
-		sec.populateResrvationQueue();
-		sec.markStudentAbsent();
-		if(sec.queue != null) {
-			
-			Queue<Reservation> localQueue = sec.getQueue();
-			if(sec.Ltime < 10 ) {
-				if(!localQueue.isEmpty()) 	{
-					while(1!=localQueue.size()) {
-						localQueue.poll();
-					}
-				}
-				assertEquals(localQueue.peek().status, "Moved to End");
-			}
-			else {
-				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-				LocalDate localDate = LocalDate.now();
-				String banned = "Student Banned on "+String.valueOf(dtf.format(localDate));
-				assertEquals(localQueue.peek().status, banned);
-			}
-		}
-	}
+//	@Test
+//	public void testStudentAbsent() {
+//		secProject sec = new secProject();
+//		sec.populateResrvationQueue();
+//		sec.markStudentAbsent();
+//		if(sec.queue != null) {
+//			
+//			Queue<Reservation> localQueue = sec.getQueue();
+//			if(sec.Ltime < 10 ) {
+//				if(!localQueue.isEmpty()) 	{
+//					while(1!=localQueue.size()) {
+//						localQueue.poll();
+//					}
+//				}
+//				assertEquals(localQueue.peek().status, "Moved to End");
+//			}
+//			else {
+//				DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+//				LocalDate localDate = LocalDate.now();
+//				String banned = "Student Banned on "+String.valueOf(dtf.format(localDate));
+//				assertEquals(localQueue.peek().status, banned);
+//			}
+//		}
+//	}
+	
 	//Report Student Absent
 	
 	@Test
 	public void testfetchFirstAppointment() {
-		secProject sec = new secProject();
+		secProject sec = new secProject(secProject.populateReservationQueue());
 	//	sec.populateResrvationQueue();
-		sec.fetchFirstAppointment();
-		if(!sec.queue.isEmpty()) {
-			assertNotNull(sec.queue.peek());
+		if(!sec.getQueue().isEmpty()) {
+			assertNotNull(sec.fetchFirstAppointment());
 		}
 	}
-	*/
+	
 	
 	@Test
 	public void testStudentAbsentAfterTenMinutes() {
-		secProject sec = new secProject();
-		sec.populateQueue(11);
+		long currentTime=System.currentTimeMillis();
+		 List<String> emails=new ArrayList<String>(Arrays.asList("student1@buffalo.edu","student2@buffalo.edu","student3@buffalo.edu","student4@buffalo.edu","student5@buffalo.edu"));
+		 List<String> questions=new ArrayList<String>(Arrays.asList("question1","question2?","question3?","question4?","question5?"));
+		
+		Reservation res=new Reservation(emails.get(0),questions.get(0),currentTime-(11* 60000));
+		Queue< Reservation> queue = new LinkedList<Reservation>();
+		queue.add(res);
+		secProject sec = new secProject(queue);
+		//sec.populateQueue(11);
 		int size = sec.getQueue().size();
-		sec.markStudentAbsent();
+		Reservation bannedRes = sec.markStudentAbsent();
+		assertNotNull(bannedRes);
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+		LocalDate localDate = LocalDate.now();
+		assertEquals("Student Banned on "+String.valueOf(dtf.format(localDate)), bannedRes.getStatus());
 		assertEquals(size - 1, sec.getQueue().size());
 		
 	}
 	
 	@Test
 	public void testStudentAbsentBeforeTenMinutes() {
-		secProject sec = new secProject();
-		sec.populateQueue(5);
+		long currentTime=System.currentTimeMillis();
+		 List<String> emails=new ArrayList<String>(Arrays.asList("student1@buffalo.edu","student2@buffalo.edu","student3@buffalo.edu","student4@buffalo.edu","student5@buffalo.edu"));
+		 List<String> questions=new ArrayList<String>(Arrays.asList("question1","question2?","question3?","question4?","question5?"));
+		
+		Reservation res=new Reservation(emails.get(0),questions.get(0),currentTime-(5* 60000));
+		Queue< Reservation> queue = new LinkedList<Reservation>();
+		queue.add(res);
+		secProject sec = new secProject(queue);
 		sec.markStudentAbsent();
 		Queue<Reservation> localQueue = sec.getQueue();
 		if(!localQueue.isEmpty()) 	{
@@ -101,7 +116,7 @@ public class ReservationTesting {
 				localQueue.poll();
 			}
 		}
-		assertEquals(localQueue.peek().status, "Student Marked Absent");
+		assertEquals(localQueue.peek().getStatus(), "Student Absent");
 		
 	}
 	

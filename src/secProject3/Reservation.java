@@ -6,11 +6,19 @@ package secProject3;
  *
  */
 public class Reservation{
-	String emailId;
-	String sampleQuestion;
-	long time;
-	String status;
+	private String emailId;
+	private String sampleQuestion;
+	private long time;
+	private String status;
 	
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	/**
 	 * Constructor for initializing a reservation
 	 * @param emailId EmailId of the student 
